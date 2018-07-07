@@ -34,13 +34,23 @@ From Wikipedia:
 finding resources related to cell lines, including derivative lines with specific 
 induced mutations.
 
-# Creating data resources
 
-## Transcript and Gene Annotations
+# Gene Expression Data
+
+## Annotation data
+
+```{r gencodegtf}
+download.file("https://www.encodeproject.org/files/gencode.v24.primary_assembly.annotation/@@download/gencode.v24.primary_assembly.annotation.gtf.gz", "gencode.v24.primary_assembly.annotation.gtf.gz")
+```
+
+```{r txdb}
+library(GenomicFeatures)
+txdb = makeTxDbFromGFF('gencode.v24.primary_assembly.annotation.gtf.gz')
+```
 
 
 
-## Gene expression data
+## Building a SummarizedExperiment
 
 The ENCODE data portal contains links to both raw and processed data. We are going to be working
 with relatively standard polyA-selected RNA-seq values. 
@@ -76,18 +86,29 @@ Now, we limit the gene quantifications to those in our `txdb` object. There are
 data for tRNAs and for ERCC control spikeins, but we will simply drop those here.
 
 ```{r limitserows}
+library(GenomicFeatures)
 genes_gr = genes(txdb)
 common_genes = intersect(names(genes_gr), rownames(se))
 se = se[common_genes,]
 rowRanges(se) = genes_gr[rownames(se)]
 ```
 
+# DNAse data
+
+```{r annotationhub}
+library(AnnotationHub)
+ah = AnnotationHub()
+query(ah, c('E123','dnase','narrowpeak'))
+k562_dnase = ah[['AH30828']]
+```
+
+
 [narrowPeak format](https://genome.ucsc.edu/FAQ/FAQformat.html#format12)
 
 
 ```{r fixseqlevels}
 common_seqlevels = intersect(seqlevels(k562_dnase), seqlevels(se))
-keepSeqlevels(se, common_seqlevels)
-keepSeqlevels(k562_dnase, common_seqlevels)
+keepSeqlevels(se, common_seqlevels, pruning.mode = "coarse")
+keepSeqlevels(k562_dnase, common_seqlevels, pruning.mode = "coarse")
 ne = distanceToNearest(se, k562_dnase[1:20000])
 ```

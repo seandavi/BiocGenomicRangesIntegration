@@ -15,10 +15,7 @@ opts_chunk$set(message=FALSE, cache=TRUE)
 BiocStyle::markdown()
 ```
 
+- [Ranges](02.RangesAndSignal.html)
+- [TranscriptDb](03.transcriptdb.html)
+- [Expression Data](04.ExpressionData.Rmd)
 
-
-- [TranscriptDb](02.transcriptdb.html)
-
-See [@Khan2016-yi].
-
-# References

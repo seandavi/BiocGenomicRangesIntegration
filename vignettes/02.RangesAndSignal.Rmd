@@ -16,7 +16,7 @@ vignette: >
 ```{r init, include=FALSE}
 library(knitr)
 library(BiocStyle)
-opts_chunk$set(message=FALSE, cache=TRUE)
+opts_chunk$set(message=FALSE)
 ```
 
 ```{r style, echo = FALSE, results = 'asis'}

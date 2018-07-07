@@ -6,3 +6,5 @@ ENCFF768TKT.tsv
 gencode.v24.primary_assembly.annotation.gtf.gz
 integrate_cache
 txdb.gencode24.sqlite
+01.Overview_cache
+04.ExpressionData_cache
