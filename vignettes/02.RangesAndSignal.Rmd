@@ -23,9 +23,19 @@ opts_chunk$set(message=FALSE, cache=TRUE)
 BiocStyle::markdown()
 ```
 
+# Getting started
+
+Genomic ranges are a way of describing regions on the genome (or any other
+linear object, such as a transcript, or even a protein). This functionality
+is typically found in the `r Biocpkg("GenomicRanges")` package.
+
 ```{r loadlib}
 library(GenomicRanges)
 ```
+
+## Example GRanges
+
+To get going, we can construct a `GRanges` object by hand as an example.
 
 ```{r mkexample}
 gr <- GRanges(
@@ -338,38 +348,119 @@ seqlengths(grl)
 ```
 
 
-#
+# Relationships between region sets
 
-###################################################
-### code chunk number 50: findOverlaps
-###################################################
-mtch <- findOverlaps(gr, grl)
+One of the more powerful approaches to genomic data integration is to ask
+about the relationship between sets of genomic ranges. The key features of 
+this process are to look at overlaps and distances to the nearest feature.
+These functionalities, combined with the operations like `flank` and `resize`, 
+for instance, allow pretty useful analyses with relatively little code.
+In general, these operations are *very* fast, even on thousands to millions
+of regions. 
+
+## Overlaps
+
+
+
+```{r findoverlaps1}
+mtch <- findOverlaps(gr, g)
 as.matrix(mtch)
+```
+
+If you are interested in only the `queryHits` or the `subjectHits`, there are 
+accessors for those (ie., `queryHits(match)`).
 
 
-###################################################
-### code chunk number 51: countOL
-###################################################
-countOverlaps(gr, grl)
+As you might expect, the `countOverlaps` method counts the regions in the
+second `GRanges` that overlap with those that overlap
+with each element of the first.
+
+```{r countoverlaps}
+countOverlaps(gr, g)
+```
+
+The `subsetByOverlaps` method simply subsets the first `GRanges` object to include
+*only* those that overlap the second. 
+
+```{r subsetByOverlaps}
+subsetByOverlaps(gr, g)
+```
+
+In some cases, you may be interested in only one hit when doing 
+overlaps. Note the `select` parameter. See the help for `findOverlaps`
+
+```{r select-first}
+findOverlaps(gr, g, select="first")
+findOverlaps(g, gr, select="first")
+```
+
+The `%over%` logical operator allows us to do similar things to 
+`findOverlaps` and `subsetByOverlaps`. 
+
+```{r}
+gr %over% g
+gr[gr %over% g]
+```
 
 
-###################################################
-### code chunk number 52: subsetByOverlaps
-###################################################
-subsetByOverlaps(gr,grl)
+## Nearest feature
+
+There are a number of useful methods that find the nearest feature (region) in a second set
+for each element in the first set. 
+
+We can review our two `GRanges` toy objects:
+
+```{r gr-review}
+g
+gr
+```
+
+- nearest: Performs conventional nearest neighbor finding. Returns an integer vector containing the index of the nearest neighbor range in subject for each range in x. If there is no nearest neighbor NA is returned. For details of the algorithm see the man page in the IRanges package (?nearest).
+
+- precede: For each range in x, precede returns the index of the range in subject that is directly preceded by the range in x. Overlapping ranges are excluded. NA is returned when there are no qualifying ranges in subject.
+
+- follow: The opposite of precede, follow returns the index of the range in subject that is directly followed by the range in x. Overlapping ranges are excluded. NA is returned when there are no qualifying ranges in subject.
+
+Orientation and strand for precede and follow: Orientation is 5' to 3', consistent with the direction of translation. Because positional numbering along a chromosome is from left to right and transcription takes place from 5' to 3', precede and follow can appear to have ‘opposite’ behavior on the + and - strand. Using positions 5 and 6 as an example, 5 precedes 6 on the + strand but follows 6 on the - strand.
+
+The table below outlines the orientation when ranges on different strands are compared. In general, a feature on * is considered to belong to both strands. The single exception is when both x and subject are * in which case both are treated as +.
 
 
-###################################################
-### code chunk number 53: select-first
-###################################################
-findOverlaps(gr, grl, select="first")
-findOverlaps(grl, gr, select="first")
+```
+       x  |  subject  |  orientation 
+     -----+-----------+----------------
+a)     +  |  +        |  ---> 
+b)     +  |  -        |  NA
+c)     +  |  *        |  --->
+d)     -  |  +        |  NA
+e)     -  |  -        |  <---
+f)     -  |  *        |  <---
+g)     *  |  +        |  --->
+h)     *  |  -        |  <---
+i)     *  |  *        |  --->  (the only situation where * arbitrarily means +)
+```
 
 
-###################################################
-### code chunk number 54: SessionInfo
-###################################################
+```{r nearest}
+res = nearest(g, gr)
+res
+```
+
+While `nearest` and friends give the index of the nearest feature, the distance
+to the nearest is sometimes also useful to have. The `distanceToNearest`
+method calculates the nearest feature as well as reporting the distance.
+
+```{r distanceToNearest}
+res = distanceToNearest(g, gr)
+res
+```
+
+
+# Session Info
+
+```{r sessionInfo}
 sessionInfo()
+```
 
 
 

@@ -13,6 +13,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+
 ```{r init, include=FALSE}
 library(knitr)
 opts_chunk$set(message=FALSE, cache=TRUE)
@@ -22,39 +23,19 @@ opts_chunk$set(message=FALSE, cache=TRUE)
 BiocStyle::markdown()
 ```
 
-# Introduction
 
-## K-562
+The `r Biocpkg("GenomicFeatures")` package retrieves and manages transcript-related features from
+the UCSC Genome Bioinformatics[^ucsc]
+and BioMart2 data resources. The package is
+useful for ChIP-chip, ChIP-seq, and RNA-seq analyses.
 
-From Wikipedia:
+[^ucsc]: https://genome.ucsc.edu
 
-> K562 cells were the first human immortalised myelogenous leukemia cell line to be established. K562 cells are of the erythroleukemia type, and the cell line is derived from a 53-year-old female chronic myelogenous leukemia patient in blast crisis. The cells are non-adherent and rounded, are positive for the bcr:abl fusion gene, and bear some proteomic resemblance to both undifferentiated granulocytes and erythrocytes. In culture they exhibit much less clumping than many other suspension lines, presumably due to the downregulation of surface adhesion molecules by bcr:abl. However, another study suggests that bcr:abl over-expression may actually increase cell adherence to cell culture plastic. K562 cells can spontaneously develop characteristics similar to early-stage erythrocytes, granulocytes and monocytes and are easily killed by natural killer cells[8] as they lack the MHC complex required to inhibit NK activity. They also lack any trace of Epstein-Barr virus and other herpesviruses. In addition to the Philadelphia chromosome they also exhibit a second reciprocal translocation between the long arm of chromosome 15 with chromosome 17. 
-
-[Cellosaurus](https://web.expasy.org/cellosaurus/CVCL_0004) is a great resource for 
-finding resources related to cell lines, including derivative lines with specific 
-induced mutations.
-
-# Creating data resources
-
-## Transcript and Gene Annotations
-
-
-
-## Gene expression data
-
-The ENCODE data portal contains links to both raw and processed data. We are going to be working
-with relatively standard polyA-selected RNA-seq values. 
-
-[Protocol]
-
-```{r geneExpression}
-download.file("https://www.encodeproject.org/files/ENCFF172GIN/@@download/ENCFF172GIN.tsv", "ENCFF172GIN.tsv")
-download.file("https://www.encodeproject.org/files/ENCFF768TKT/@@download/ENCFF768TKT.tsv", "ENCFF768TKT.tsv")
+```{r library}
+library('GenomicFeatures')
 ```
-
-[Protocol]: https://www.encodeproject.org/documents/6354169f-86f6-4b59-8322-141005ea44eb/@@download/attachment/Long%20RNA-seq%20pipeline%20overview.pdf
-
-## Annotation
+                               
+# Annotation
 
 ```{r gencodegtf}
 download.file("https://www.encodeproject.org/files/gencode.v24.primary_assembly.annotation/@@download/gencode.v24.primary_assembly.annotation.gtf.gz", "gencode.v24.primary_assembly.annotation.gtf.gz")
@@ -77,4 +58,6 @@ saveDb(txdb, 'txdb.gencode24.sqlite')
 txdb = loadDb(file = 'txdb.gencode24.sqlite')
 genes(txdb)
 ```
+
+
 

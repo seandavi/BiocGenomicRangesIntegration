@@ -6,6 +6,17 @@ output: html_document
 bibliography: bibliography.bib
 ---
 
+```{r init, include=FALSE}
+library(knitr)
+opts_chunk$set(message=FALSE, cache=TRUE)
+```
+
+```{r style, echo = FALSE, results = 'asis'}
+BiocStyle::markdown()
+```
+
+
+
 - [TranscriptDb](02.transcriptdb.html)
 
 See [@Khan2016-yi].
